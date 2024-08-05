@@ -1,4 +1,4 @@
-# Gnuddha - Bash Meditation
+# GNUddha - Bash Meditation
 
 <img src="content/Screenshot 2024-08-04 at 10.38.08 PM.png" alt="alt text" width="500"/>
 
