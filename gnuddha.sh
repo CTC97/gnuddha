@@ -185,8 +185,6 @@ if [ "$FLAG_T" = true ]; then
     if (( "$TOTAL < $((SESSION_TIME * 60))" | bc -l )); then echo "passed" 
     fi
 
-    
-
     while :
     do
         comparison_value=$(echo "$SESSION_TIME * 60" | bc -l)
