@@ -13,6 +13,14 @@ SESSION_TIME=0
 BY_NAME=""
 QUOTE=""
 
+FRAME_RATE=24
+FRAME_UP=1
+FRAME_INDEX=1
+SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
+# echo "DUR : ${SLEEP_DUR}"
+
+
+
 # Function to handle window resize
 handle_resize() {
     clear
@@ -22,7 +30,7 @@ trap handle_resize WINCH
 # Cleanup function to run on script exit
 cleanup() {
     clear
-    cat buddha.txt
+    cat b_frames/0.txt
     SESSION_LENGTH=$(bc <<< "scale=2; ${TOTAL}/60")
     echo -en "\007"
     echo -e "\n\nSee you next time! Don't work too hard." | fold -w 32 -s
@@ -39,12 +47,27 @@ fetchQuote() {
 # Function to iterate and display content
 iterate() {
     clear
-    cat buddha.txt
+    if (( FRAME_INDEX == 11 )); then
+        FRAME_UP=0
+    fi
+
+    if (( FRAME_INDEX == 0 )); then
+        FRAME_UP=1
+    fi
+
+    if (( FRAME_UP == 1 )); then
+        FRAME_INDEX=$((FRAME_INDEX+1))
+    else 
+        FRAME_INDEX=$((FRAME_INDEX-1))
+    fi
+    
+    frame=$((FRAME_INDEX % 12))
+    cat "b_frames/${frame}.txt"
     echo -e "\n${QUOTE}" | fold -w 32 -s
     echo -e "\t- ${BY_NAME}"
-    TOTAL=$((TOTAL + 1))
+    TOTAL=$(echo "scale=2; $TOTAL + $SLEEP_DUR" | bc)
     echo -e "\n\nTotal time: ${TOTAL} seconds" 
-    sleep 1
+    sleep "$SLEEP_DUR"
     clear
 }
 
@@ -70,16 +93,29 @@ while getopts ":t:v" opt; do
 done
 shift $((OPTIND -1))
 
-# Debug output to check value_t
-echo "Debug: flag_t=$flag_t, value_t=$value_t"
-
 # Fetch the initial quote
 fetchQuote
 
 # Main logic
 if [ "$FLAG_T" = true ]; then
-    while [ "$TOTAL" -lt $((SESSION_TIME * 60)) ]; do
-        iterate
+    echo "t: $TOTAL"
+    echo "st: $SESSION_TIME"
+
+    echo HERE
+    
+    if (( "$TOTAL < $((SESSION_TIME * 60))" | bc -l )); then echo "passed" 
+    fi
+
+    
+
+    while :
+    do
+        comparison_value=$(echo "$SESSION_TIME * 60" | bc -l)
+        if [ "$(echo "$TOTAL < $comparison_value" | bc -l)" -eq 1 ]; then
+            iterate
+        else
+            echo "TOTAL ($TOTAL) is not less than SESSION_TIME ($SESSION_TIME) * 60"
+        fi
     done
 else
     echo 'done'
