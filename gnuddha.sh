@@ -16,6 +16,10 @@ QUOTE=""
 FLAG_F=false
 FRAME_RATE=24
 
+FLAG_C=false
+COLOR=""
+RESET_COLOR="\033[0m"
+
 FRAME_UP=1
 FRAME_INDEX=1
 SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
@@ -43,6 +47,61 @@ fetchQuote() {
     api_data=$(curl -s "https://buddha-api.com/api/random")
     BY_NAME=$(echo "$api_data" | jq -r '.byName')
     QUOTE=$(echo "$api_data" | jq -r '.text')
+}
+
+fetchColor() {
+  local color="$1"  # Get the first argument
+  local code=""
+
+  case "$color" in
+    "red")
+      code='\033[0;31m'
+      ;;
+    "green")
+      code='\033[0;32m'
+      ;;
+    "yellow")
+      code='\033[0;33m'
+      ;;
+    "blue")
+      code='\033[0;34m'
+      ;;
+    "purple")
+      code='\033[0;35m'
+      ;;
+    "cyan")
+      code='\033[0;36m' 
+      ;;
+    "iwhite")
+      code='\033[0;97m'  # White
+      ;;
+    "iblack")
+      code='\033[0;90m'  # Intense Black
+      ;;
+    "ired")
+      code='\033[0;91m'  # Intense Red
+      ;;
+    "igreen")
+      code='\033[0;92m'  # Intense Green
+      ;;
+    "iyellow")
+      code='\033[0;93m'  # Intense Yellow
+      ;;
+    "iblue")
+      code='\033[0;94m'  # Intense Blue
+      ;;
+    "ipurple")
+      code='\033[0;95m'  # Intense Purple
+      ;;
+    "icyan")
+      code='\033[0;96m'  # Intense Cyan
+      ;;
+    *)
+      code='\033[0m'    
+      ;;
+  esac
+
+  echo "$code"  
 }
 
 splitQuote() {
@@ -107,41 +166,41 @@ iterate() {
     while read -r line; do
     if [[ "$OVER" == false ]]; then
         if ((line_index == 3)); then
-            echo -e "$line\tTotal time: ${TOTAL} seconds"
+            echo -e "$COLOR$line$RESET_COLOR\tTotal time: $COLOR${TOTAL} seconds$RESET_COLOR"
         elif ((line_index == 5)); then
-            echo -e "$line\t${lines[0]}"
+            echo -e "$COLOR$line$RESET_COLOR\t${lines[0]}"
             last_quote_line=5
         elif ((line_index == 6 && ${#lines[@]} >= 1)); then
-            echo -e "$line\t${lines[1]}"
+            echo -e "$COLOR$line$RESET_COLOR\t${lines[1]}"
             last_quote_line=6
         elif ((line_index == 7 && ${#lines[@]} >= 2)); then
-            echo -e "$line\t${lines[2]}"
+            echo -e "$COLOR$line$RESET_COLOR\t${lines[2]}"
             last_quote_line=7
         elif ((line_index == 8 && ${#lines[@]} >= 3)); then
-            echo -e "$line\t${lines[3]}"
+            echo -e "$COLOR$line$RESET_COLOR\t${lines[3]}"
             last_quote_line=8
         elif ((line_index == 9 && ${#lines[@]} >= 4)); then
-            echo -e "$line\t${lines[4]}"
+            echo -e "$COLOR$line$RESET_COLOR\t${lines[4]}"
             last_quote_line=9
         elif ((line_index == 10 && ${#lines[@]} >= 5)); then
-            echo -e "$line\t${lines[5]}"
+            echo -e "$COLOR$line$RESET_COLOR\t${lines[5]}"
             last_quote_line=10
         elif ((line_index == 11 && ${#lines[@]} >= 6)); then
-            echo -e "$line\t${lines[6]}"
+            echo -e "$COLOR$line$RESET_COLOR\t${lines[6]}"
             last_quote_line=11
         elif ((line_index == last_quote_line + 1)); then 
-            echo -e "$line\t${BY_NAME}"
+            echo -e "$COLOR$line$RESET_COLOR\t$COLOR${BY_NAME}$RESET_COLOR"
         else
-            echo -e "$line"
+            echo -e "$COLOR$line$RESET_COLOR"
         fi
         ((line_index++))
     else 
         if ((line_index == 6)); then
-            echo -e "$line\tSee you next time."
+            echo -e "$COLOR$line$RESET_COLOR\tSee you next time."
         elif ((line_index == 7)); then 
-            echo -e "$line\tDon't work too hard!"
+            echo -e "$COLOR$line$RESET_COLOR\tDon't work too hard!"
         else 
-            echo -e "$line"
+            echo -e "$COLOR$line$RESET_COLOR"
         fi
         ((line_index++))
     fi
@@ -162,7 +221,7 @@ usage() {
 }
 
 # Parsing command-line options
-while getopts ":t:f:" opt; do
+while getopts ":t:f:c:" opt; do
     case ${opt} in
         t )
             FLAG_T=true
@@ -173,6 +232,11 @@ while getopts ":t:f:" opt; do
             FLAG_F=true
             FRAME_RATE=$OPTARG
             echo "Option -f set with value: $FRAME_RATE"
+            ;;
+        c )
+            FLAG_C=true
+            COLOR=$(fetchColor $OPTARG)
+            echo "Option -c set with value: $COLOR"
             ;;
         \? )
             echo "Invalid option: -$OPTARG"
