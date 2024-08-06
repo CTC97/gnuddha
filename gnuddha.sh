@@ -21,6 +21,9 @@ FRAME_INDEX=1
 SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
 
 OVER=false
+
+CURRENT_TIME=$(date +%s)
+LAST_TIME=$(date +%s)
 # echo "DUR : ${SLEEP_DUR}"
 
 # Function to handle window resize
@@ -89,7 +92,12 @@ iterate() {
         FRAME_INDEX=$((FRAME_INDEX-1))
     fi
     
-    TOTAL=$(echo "scale=2; $TOTAL + $SLEEP_DUR" | bc)
+    # calculate delta time
+    CURRENT_TIME=$(date +%s)
+    DELTA=$((CURRENT_TIME - LAST_TIME))
+    LAST_TIME=$CURRENT_TIME
+
+    TOTAL=$(echo "scale=2; $TOTAL + $DELTA" | bc)
 
     frame=$((FRAME_INDEX % 12))
     line_index=0
