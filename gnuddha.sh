@@ -19,6 +19,8 @@ FRAME_RATE=24
 FRAME_UP=1
 FRAME_INDEX=1
 SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
+
+OVER=false
 # echo "DUR : ${SLEEP_DUR}"
 
 # Function to handle window resize
@@ -29,11 +31,8 @@ trap handle_resize WINCH
 
 # Cleanup function to run on script exit
 cleanup() {
-    clear
-    cat b_frames/0.txt
     SESSION_LENGTH=$(bc <<< "scale=2; ${TOTAL}/60")
     echo -en "\007"
-    echo -e "\n\nSee you next time! Don't work too hard." | fold -w 32 -s
 }
 trap cleanup EXIT
 
@@ -97,7 +96,8 @@ iterate() {
 
     local last_quote_line=444
 
-    while frame_file= read -r line; do
+    while read -r line; do
+    if [[ "$OVER" == false ]]; then
         if ((line_index == 3)); then
             echo -e "$line\tTotal time: ${TOTAL} seconds"
         elif ((line_index == 5)); then
@@ -118,19 +118,33 @@ iterate() {
         elif ((line_index == 10 && ${#lines[@]} >= 5)); then
             echo -e "$line\t${lines[5]}"
             last_quote_line=10
-         elif ((line_index == 11 && ${#lines[@]} >= 6)); then
+        elif ((line_index == 11 && ${#lines[@]} >= 6)); then
             echo -e "$line\t${lines[6]}"
             last_quote_line=11
-        elif ((line_index==last_quote_line+1)); then 
+        elif ((line_index == last_quote_line + 1)); then 
             echo -e "$line\t${BY_NAME}"
         else
             echo -e "$line"
         fi
         ((line_index++))
-    done < "b_frames/${frame}.txt"
+    else 
+        if ((line_index == 6)); then
+            echo -e "$line\tSee you next time."
+        elif ((line_index == 7)); then 
+            echo -e "$line\tDon't work too hard!"
+        else 
+            echo -e "$line"
+        fi
+        ((line_index++))
+    fi
+done < "b_frames/${frame}.txt"
+
+
     echo -e "\n"
     sleep "$SLEEP_DUR"
-    clear
+    if [[ "$OVER" == false ]]; then
+        clear
+    fi
 }
 
 # Usage function to display script usage
@@ -170,9 +184,6 @@ SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
 fetchQuote
 splitQuote
 
-for line in "${lines[@]}"; do
-    echo -e "linehere\n\n$line\n\n"
-done
 
 if [ "$FLAG_F" = true ]; then 
     echo FLAGFFRUE
@@ -185,15 +196,19 @@ if [ "$FLAG_T" = true ]; then
     if (( "$TOTAL < $((SESSION_TIME * 60))" | bc -l )); then echo "passed" 
     fi
 
-    while :
+    echo $OVER
+    while ((OVER == false));
     do
         comparison_value=$(echo "$SESSION_TIME * 60" | bc -l)
         if [ "$(echo "$TOTAL < $comparison_value" | bc -l)" -eq 1 ]; then
             iterate
         else
-            echo "TOTAL ($TOTAL) is not less than SESSION_TIME ($SESSION_TIME) * 60"
+            OVER=true
+            iterate
+            break
         fi
     done
+
 else
     echo 'done'
 fi
