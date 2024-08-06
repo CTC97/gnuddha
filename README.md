@@ -6,8 +6,6 @@
 
 Bringing meditation to coders - people who need it, and often never turn to it.
 
-Usage: ./gnuddha.sh -t [session length in minutes]
-
 ## Arguments
 - session length: ```-t [length in minutes]```
 - frame rate: ```-f [fps]```
