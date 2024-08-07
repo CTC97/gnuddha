@@ -4,7 +4,7 @@
 
 ## Overview
 
-Bringing meditation to coders - people who need it, and often never turn to it.
+Bringing meditation to your terminal - take some time to disconnect.
 
 ## Arguments
 - session length: ```-t [length in minutes]```
