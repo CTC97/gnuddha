@@ -1,6 +1,6 @@
 # GNUddha - Bash Meditation
 
-<img src="content/Screenshot 2024-08-06 at 7.12.52 PM.png" alt="alt text" width="500"/>
+<img src="content/Screenshot 2024-08-06 at 11.32.56 PM.png" alt="alt text" width="500"/>
 
 ## Overview
 
