@@ -168,7 +168,7 @@ iterate() {
     local last_quote_line=444
 
     DISPLAY_TIME=$(date +"%Y-%m-%d %H:%M:%S")
-    echo -e "\n[ ${COLOR}current-user${RESET_COLOR} | ${COLOR}$(date +"%Y-%m-%d %H:%M:%S")${RESET_COLOR} | ${COLOR}Brooklyn, ${region}${RESET_COLOR}  ]"
+    echo -e "\n[ ${COLOR}$(whoami)${RESET_COLOR} | ${COLOR}$(date +"%Y-%m-%d %H:%M:%S")${RESET_COLOR} | ${COLOR}${city}, ${region}${RESET_COLOR}  ]"
     echo -e "\n"
 
     while read -r line; do
