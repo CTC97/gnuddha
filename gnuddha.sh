@@ -28,9 +28,10 @@ OVER=false
 
 CURRENT_TIME=$(date +%s)
 LAST_TIME=$(date +%s)
-# echo "DUR : ${SLEEP_DUR}"
 
-# Function to handle window resize
+AVERAGE=0
+SESSION_COUNT=0
+
 handle_resize() {
     clear
 }
@@ -39,10 +40,44 @@ trap handle_resize WINCH
 # Cleanup function to run on script exit
 cleanup() {
     SESSION_LENGTH=$(bc <<< "scale=2; ${TOTAL}/60")
+    echo $(bc <<< "scale=2; ${TOTAL}/60") >> ttls.txt 
     echo -en "\007"
     tput cnorm
 }
 trap cleanup EXIT
+
+computeAverage() {
+    if [ -f ttls.txt ]; then
+        TOTAL_VALUES=($(cat ttls.txt))
+        
+        SUM=0
+        COUNT=0
+        for VALUE in "${TOTAL_VALUES[@]}"; do
+            # Ensure that VALUE is not empty and is a valid number
+            if [[ -n "$VALUE" && "$VALUE" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
+                # Use bc to handle decimal addition
+                SUM=$(echo "$SUM + $VALUE" | bc)
+                COUNT=$((COUNT + 1))
+            else
+                echo "Skipping invalid value: $VALUE"
+            fi
+        done
+
+        SESSION_COUNT=$COUNT
+        
+        # Calculate the average
+        if [ $COUNT -ne 0 ]; then
+            AVERAGE=$(echo "scale=2; $SUM / $COUNT" | bc)
+        else
+            AVERAGE=0
+        fi
+    else
+        echo "No previous TOTAL values found."
+        AVERAGE=0
+    fi
+}
+
+
 
 fetchCalls() {
     api_data=$(curl -s "https://buddha-api.com/api/random")
@@ -218,7 +253,7 @@ iterate() {
 done < "b_frames/${frame}.txt"
 
     # FOOTER UI
-    echo -e "\n[ ${COLOR}Session Count${RESET_COLOR}: __ ] | [ ${COLOR}Average Session Length${RESET_COLOR}: __]" 
+    echo -e "\n[ ${COLOR}Session Count${RESET_COLOR}: ${SESSION_COUNT} ] | [ ${COLOR}Average Session Length${RESET_COLOR}: ${AVERAGE}m ]" 
     
 
     sleep "$SLEEP_DUR"
@@ -270,7 +305,7 @@ SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
 # Fetch the initial quote and format
 fetchCalls
 splitQuote
-
+computeAverage
 
 if [ "$FLAG_F" = true ]; then 
     echo FLAGFFRUE
