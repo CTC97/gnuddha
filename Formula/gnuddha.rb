@@ -1,8 +1,8 @@
 class gnuddha < Formula
   desc "Meditation at home."
   homepage "https://github.com/CTC97/gnuddha"
-  url "https://github.com/yourusername/yourrepository/archive/v1.0.0.tar.gz"
-  sha256 "hash_of_your_tar_file"
+  url "https://github.com/CTC97/gnuddha/archive/refs/tags/0.1.a.tar.gz"
+  sha256 "c1865ae52219a431208756b4b36e78be6c6331eadf56e4934ccc8921f31ce3eb"
   version "0.1.0"
 
   depends_on "jq"
