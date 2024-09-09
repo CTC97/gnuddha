@@ -1,4 +1,4 @@
-class gnuddha < Formula
+class Gnuddha < Formula
   desc "Meditation at home."
   homepage "https://github.com/CTC97/gnuddha"
   url "https://github.com/CTC97/gnuddha/archive/refs/tags/0.1.a.tar.gz"
@@ -10,12 +10,12 @@ class gnuddha < Formula
   depends_on "bc"
 
   def install
-    bin.install "gnuddha.sh"
-    bin.install "dhamma.json"
-    bin.install "bells-1-72261.mp3"
+    bin.install "gnuddha.sh" => "gnuddha"
+    (pkgshare/"b_frames").install Dir["b_frames/*"]
+    pkgshare.install "dhamma.json", "bells-1-72261.mp3"
   end
 
   test do
-    system "#{bin}/gnuddha.sh -t 1 -c ipurple", "-h"
+    system "#{bin}/gnuddha -t 1 -c ipurple"
   end
 end
