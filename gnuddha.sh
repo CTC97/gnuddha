@@ -41,7 +41,6 @@ trap handle_resize WINCH
 cleanup() {
     SESSION_LENGTH=$(bc <<< "scale=2; ${TOTAL}/60")
     echo $(bc <<< "scale=2; ${TOTAL}/60") >> ttls.txt 
-    echo -en "\007"
     tput cnorm
 }
 trap cleanup EXIT
@@ -86,13 +85,15 @@ fetchCalls() {
     random_key=$(( (RANDOM % total_keys) + 1 ))
     echo "Random Quote:"
     echo "$random_quote"
-    BY_NAME="BUDDHA"
+    BY_NAME="Dhammapada"
     #QUOTE=$(echo "$api_data" | jq -r '.text')
     QUOTE=$(echo "$json_data" | jq -r --arg key "$random_key" '.[$key]')
 
     loc_info=$(curl -s https://ipinfo.io)
     city=$(echo "$loc_info" | jq -r '.city')
     region=$(echo "$loc_info" | jq -r '.region')
+
+    playBell
 }
 
 fetchColor() {
@@ -179,6 +180,10 @@ splitQuote() {
     fi
 }
 
+playBell() {
+    mpg123 bells-1-72261.mp3 > /dev/null 2>&1 &
+}
+
 # Function to iterate and display content
 iterate() {
     clear
@@ -210,7 +215,7 @@ iterate() {
 
     DISPLAY_TIME=$(date +"%Y-%m-%d %H:%M:%S")
     #echo -e "\n[ ${COLOR}$(whoami)${RESET_COLOR} | ${COLOR}$(date +"%Y-%m-%d %H:%M:%S")${RESET_COLOR} | ${COLOR}${city}, ${region}${RESET_COLOR}  ]"
-    echo -e "\n"
+    echo -e "\n\n"
 
     while read -r line; do
     if [[ "$OVER" == false ]]; then
@@ -259,6 +264,7 @@ iterate() {
 done < "b_frames/${frame}.txt"
 
     # FOOTER UI
+    echo -e "\n"
     #echo -e "\n[ ${COLOR}Session Count${RESET_COLOR}: ${SESSION_COUNT} ] | [ ${COLOR}Average Session Length${RESET_COLOR}: ${AVERAGE}m ]" 
     
 
@@ -333,6 +339,7 @@ if [ "$FLAG_T" = true ]; then
         else
             OVER=true
             iterate
+            playBell
             break
         fi
     done
