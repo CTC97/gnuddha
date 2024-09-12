@@ -32,6 +32,8 @@ LAST_TIME=$(date +%s)
 AVERAGE=0
 SESSION_COUNT=0
 
+SPRITE_DIRECTORY="b_frames"
+
 handle_resize() {
     clear
 }
@@ -243,10 +245,13 @@ iterate() {
             echo -e "$COLOR$line$RESET_COLOR\t${lines[6]}"
             last_quote_line=12
         elif ((line_index == last_quote_line + 1)); then 
-            if ((last_quote_line == 12)); 
-                then echo -e "\n" 
+            if ((last_quote_line < 12));  then
+                echo -e "$COLOR$line$RESET_COLOR\t$COLOR${BY_NAME}$RESET_COLOR"
             fi
-            echo -e "$COLOR$line$RESET_COLOR\t$COLOR${BY_NAME}$RESET_COLOR"
+        elif ((line_index == last_quote_line + 2)); then 
+            if ((last_quote_line == 12)); then
+                echo -e "$COLOR$line$RESET_COLOR\t$COLOR${BY_NAME}$RESET_COLOR"
+            fi
         else
             echo -e "$COLOR$line$RESET_COLOR"
         fi
@@ -261,7 +266,7 @@ iterate() {
         fi
         ((line_index++))
     fi
-done < "b_frames/${frame}.txt"
+done < "${SPRITE_DIRECTORY}/${frame}.txt"
 
     # FOOTER UI
     echo -e "\n"
@@ -283,7 +288,7 @@ usage() {
 tput civis
 
 # Parsing command-line options
-while getopts ":t:f:c:" opt; do
+while getopts ":t:f:c:g:" opt; do
     case ${opt} in
         t )
             FLAG_T=true
@@ -299,6 +304,9 @@ while getopts ":t:f:c:" opt; do
             FLAG_C=true
             COLOR=$(fetchColor $OPTARG)
             echo "Option -c set with value: $COLOR"
+            ;;
+        g)
+            SPRITE_DIRECTORY="g_frames"
             ;;
         \? )
             echo "Invalid option: -$OPTARG"
@@ -317,7 +325,7 @@ SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
 # Fetch the initial quote and format
 fetchCalls
 splitQuote
-computeAverage
+#computeAverage
 
 if [ "$FLAG_F" = true ]; then 
     echo FLAGFFRUE
