@@ -266,7 +266,7 @@ iterate() {
         fi
         ((line_index++))
     fi
-done < "${SPRITE_DIRECTORY}/${frame}.txt"
+done < "sprites/${SPRITE_DIRECTORY}/${frame}.txt"
 
     # FOOTER UI
     echo -e "\n"
@@ -288,7 +288,7 @@ usage() {
 tput civis
 
 # Parsing command-line options
-while getopts ":t:f:c:g:" opt; do
+while getopts ":t:f:c:s:" opt; do
     case ${opt} in
         t )
             FLAG_T=true
@@ -305,9 +305,10 @@ while getopts ":t:f:c:g:" opt; do
             COLOR=$(fetchColor $OPTARG)
             echo "Option -c set with value: $COLOR"
             ;;
-        g)
-            SPRITE_DIRECTORY="g_frames"
+        s)
+            SPRITE_DIRECTORY=$OPTARG
             ;;
+        
         \? )
             echo "Invalid option: -$OPTARG"
             usage
