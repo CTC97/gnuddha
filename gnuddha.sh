@@ -266,7 +266,7 @@ iterate() {
         fi
         ((line_index++))
     fi
-done < "sprites/${SPRITE_DIRECTORY}/${frame}.txt"
+done < "$(brew --prefix)/share/sprites/${SPRITE_DIRECTORY}/${frame}.txt"
 
     # FOOTER UI
     echo -e "\n"
