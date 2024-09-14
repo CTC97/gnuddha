@@ -146,7 +146,7 @@ splitQuote() {
 }
 
 playBell() {
-    mpg123 bells-1-72261.mp3 > /dev/null 2>&1 &
+    mpg123 $(brew --prefix)/share/gnuddha/audio/bells-1-72261.mp3 > /dev/null 2>&1 &
 }
 
 # Function to iterate and display content
