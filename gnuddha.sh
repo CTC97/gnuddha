@@ -31,6 +31,9 @@ LAST_TIME=$(date +%s)
 
 SPRITE_DIRECTORY="b_frames"
 
+DIRECTORY=$(mktemp -d)
+cp -r $(brew --prefix)/share/gnuddha/* "${DIRECTORY}"
+
 handle_resize() {
     clear
 }
@@ -45,7 +48,7 @@ trap cleanup EXIT
 
 fetchCalls() {
     #api_data=$(curl -s "https://buddha-api.com/api/random")
-    json_data=$(cat "$(brew --prefix)/share/gnuddha/docs/dhamma.json")
+    json_data=$(cat "${DIRECTORY}/res/docs/dhamma.json")
     total_keys=$(echo "$json_data" | jq -r 'keys | length')
     random_key=$(( (RANDOM % total_keys) + 1 ))
     echo "Random Quote:"
@@ -146,7 +149,7 @@ splitQuote() {
 }
 
 playBell() {
-    mpg123 $(brew --prefix)/share/gnuddha/audio/bells-1-72261.mp3 > /dev/null 2>&1 &
+    mpg123 "${DIRECTORY}/res/sounds/bell_01.mp3" > /dev/null 2>&1 &
 }
 
 # Function to iterate and display content
@@ -229,7 +232,7 @@ iterate() {
         fi
         ((line_index++))
     fi
-done < "$(brew --prefix)/share/gnuddha/sprites/${SPRITE_DIRECTORY}/${frame}.txt"
+done < "${DIRECTORY}/res/sprites/${SPRITE_DIRECTORY}/${frame}.txt"
 
     # FOOTER UI
     echo -e "\n"
