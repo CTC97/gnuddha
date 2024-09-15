@@ -7,8 +7,8 @@ NC='\033[0m'
 TOTAL=0
 
 # Flags and variables
-FLAG_T=false
-SESSION_TIME=0
+FLAG_T=true
+SESSION_TIME=5
 
 BY_NAME=""
 QUOTE=""
@@ -51,7 +51,6 @@ fetchCalls() {
     json_data=$(cat "${DIRECTORY}/res/docs/dhamma.json")
     total_keys=$(echo "$json_data" | jq -r 'keys | length')
     random_key=$(( (RANDOM % total_keys) + 1 ))
-    echo "Random Quote:"
     echo "$random_quote"
     BY_NAME="Dhammapada"
     #QUOTE=$(echo "$api_data" | jq -r '.text')
@@ -246,7 +245,7 @@ done < "${DIRECTORY}/res/sprites/${SPRITE_DIRECTORY}/${frame}.txt"
 
 # Usage function to display script usage
 usage() {
-    echo "Usage: $0 [-t time_in_minutes] [-v]"
+    echo "Usage: $0 [-t time_in_minutes]"
     exit 1
 }
 
@@ -316,7 +315,4 @@ if [ "$FLAG_T" = true ]; then
             break
         fi
     done
-
-else
-    echo 'done'
 fi
