@@ -47,14 +47,11 @@ cleanup() {
 trap cleanup EXIT
 
 fetchCalls() {
-    #api_data=$(curl -s "https://buddha-api.com/api/random")
     json_data=$(cat "${DIRECTORY}/res/docs/dhamma.json")
     total_keys=$(echo "$json_data" | jq -r 'keys | length')
-    random_key=$(( (RANDOM % total_keys) + 1 ))
-    echo "$random_quote"
-    BY_NAME="Dhammapada"
-    #QUOTE=$(echo "$api_data" | jq -r '.text')
-    QUOTE=$(echo "$json_data" | jq -r --arg key "$random_key" '.[$key]')
+    random_key=$(( RANDOM % total_keys ))
+    QUOTE=$(echo "$json_data" | jq -r --arg key "$random_key" '.[$key].quote')
+    BY_NAME=$(echo "$json_data" | jq -r --arg key "$random_key" '.[$key].source')
 
     loc_info=$(curl -s https://ipinfo.io)
     city=$(echo "$loc_info" | jq -r '.city')
@@ -126,15 +123,15 @@ splitQuote() {
     local result=""
 
     for word in ${words[@]}; do 
-        length_test=$(( ${#result} + ${#word} + 1 ))  # +1 for space between words
+        length_test=$(( ${#result} + ${#word} + 1 ))
 
         if (( length_test > max_length )); then 
             lines+=("$result")
             echo -e "\t\t${result}"
-            result="$word"  # Start new line with the current word
+            result="$word"
         else 
             if [[ -n $result ]]; then
-                result+=$' '$word  # Add space between words
+                result+=$' '$word 
             else
                 result=$word
             fi
@@ -181,7 +178,6 @@ iterate() {
     local last_quote_line=444
 
     DISPLAY_TIME=$(date +"%Y-%m-%d %H:%M:%S")
-    #echo -e "\n[ ${COLOR}$(whoami)${RESET_COLOR} | ${COLOR}$(date +"%Y-%m-%d %H:%M:%S")${RESET_COLOR} | ${COLOR}${city}, ${region}${RESET_COLOR}  ]"
     echo -e "\n\n"
 
     while read -r line; do
@@ -243,7 +239,6 @@ done < "${DIRECTORY}/res/sprites/${SPRITE_DIRECTORY}/${frame}.txt"
     fi
 }
 
-# Usage function to display script usage
 usage() {
     echo "Usage: $0 [-t time_in_minutes]"
     exit 1
@@ -251,7 +246,6 @@ usage() {
 
 tput civis
 
-# Parsing command-line options
 while getopts ":t:f:c:s:" opt; do
     case ${opt} in
         t )
@@ -287,7 +281,6 @@ shift $((OPTIND -1))
 
 SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
 
-# Fetch the initial quote and format
 fetchCalls
 splitQuote
 
@@ -296,7 +289,6 @@ if [ "$FLAG_F" = true ]; then
     echo "$FRAME_RATE"
 fi
 
-# Main logic
 
 if [ "$FLAG_T" = true ]; then
     if (( "$TOTAL < $((SESSION_TIME * 60))" | bc -l )); then echo "passed" 
