@@ -1,9 +1,10 @@
 # GNUddha - Bash Meditation
 
+<p float="left">
 <img src="content/Screenshot 2024-09-21 at 4.26.51 PM.png" alt="alt text" width="200"/>
 <img src="content/Screenshot 2024-09-21 at 4.23.49 PM.png" alt="alt text" width="200"/>
 <img src="content/Screenshot 2024-09-21 at 4.27.37 PM.png" alt="alt text" width="200"/>
-
+</p>
 
 ## Overview
 
