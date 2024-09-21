@@ -50,7 +50,7 @@ cleanup() {
     tput cnorm
 
 if [ "$STORE_NEW_DEFAULTS" = true ]; then
-  cat > "$CONFIG_FILE" <<EOL
+  cat > "${DIRECTORY}/res/config.cfg" <<EOL
 # DEFAULT CONFIGURATION
 SESSION_TIME="${SESSION_TIME}"
 SPRITE_DIRECTORY="${SPRITE_DIRECTORY}"
@@ -63,7 +63,7 @@ trap cleanup EXIT
 fetchDefaults() {
     CONFIG_FILE="${DIRECTORY}/res/config.cfg"
     if [ -f "$CONFIG_FILE" ]; then
-    source "$CONFIG_FILE"
+        source "$CONFIG_FILE"
     fi
 }
 
