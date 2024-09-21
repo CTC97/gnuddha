@@ -8,7 +8,7 @@ TOTAL=0
 
 # Flags and variables
 FLAG_T=true
-SESSION_TIME=5
+SESSION_TIME=${SESSION_TIME:-5}
 
 BY_NAME=""
 QUOTE=""
@@ -16,8 +16,8 @@ QUOTE=""
 FLAG_F=false
 FRAME_RATE=24
 
-FLAG_C=false
-COLOR="\033[0m"
+FLAG_C=false    
+COLOR=${COLOR:-"\033[0m"}
 RESET_COLOR="\033[0m"
 
 FRAME_UP=1
@@ -29,10 +29,15 @@ OVER=false
 CURRENT_TIME=$(date +%s)
 LAST_TIME=$(date +%s)
 
-SPRITE_DIRECTORY="b_frames"
+SPRITE_DIRECTORY=${SPRITE_DIRECTORY:-"b_frames"}
+
+STORE_NEW_DEFAULTS=false
 
 DIRECTORY=$(mktemp -d)
 cp -r $(brew --prefix)/share/gnuddha/* "${DIRECTORY}"
+
+#for local development
+# DIRECTORY="."
 
 handle_resize() {
     clear
@@ -43,8 +48,24 @@ trap handle_resize WINCH
 cleanup() {
     SESSION_LENGTH=$(bc <<< "scale=2; ${TOTAL}/60")
     tput cnorm
+
+if [ "$STORE_NEW_DEFAULTS" = true ]; then
+  cat > "$CONFIG_FILE" <<EOL
+# DEFAULT CONFIGURATION
+SESSION_TIME="${SESSION_TIME}"
+SPRITE_DIRECTORY="${SPRITE_DIRECTORY}"
+COLOR="${COLOR}"
+EOL
+fi
 }
 trap cleanup EXIT
+
+fetchDefaults() {
+    CONFIG_FILE="${DIRECTORY}/res/config.cfg"
+    if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+    fi
+}
 
 fetchCalls() {
     json_data=$(cat "${DIRECTORY}/res/docs/dhamma.json")
@@ -82,6 +103,12 @@ fetchColor() {
       ;;
     "cyan")
       code='\033[0;36m' 
+      ;;
+    "clay")
+      code='\033[38;5;217m'
+      ;;
+    "pink")
+      code='\033[38;5;205m'
       ;;
     "iwhite")
       code='\033[0;97m'  # White
@@ -246,7 +273,9 @@ usage() {
 
 tput civis
 
-while getopts ":t:f:c:s:" opt; do
+fetchDefaults
+
+while getopts ":t:f:c:s:d" opt; do
     case ${opt} in
         t )
             FLAG_T=true
@@ -266,7 +295,9 @@ while getopts ":t:f:c:s:" opt; do
         s)
             SPRITE_DIRECTORY=$OPTARG
             ;;
-        
+        d)
+            STORE_NEW_DEFAULTS=true
+            ;;
         \? )
             echo "Invalid option: -$OPTARG"
             usage
