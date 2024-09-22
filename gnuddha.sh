@@ -16,7 +16,7 @@ QUOTE=""
 FLAG_F=false
 FRAME_RATE=24
 
-FLAG_C=false    
+FLAG_C=false
 COLOR=${COLOR:-"\033[0m"}
 RESET_COLOR="\033[0m"
 
@@ -34,7 +34,7 @@ SPRITE_DIRECTORY=${SPRITE_DIRECTORY:-"b_frames"}
 STORE_NEW_DEFAULTS=false
 
 DIRECTORY=$(mktemp -d)
-cp -r $(brew --prefix)/share/gnuddha/* "${DIRECTORY}"
+cp -r $(brew --prefix gnuddha)/pkshare/* "${DIRECTORY}"
 
 #for local development
 # DIRECTORY="."
@@ -102,7 +102,7 @@ fetchColor() {
       code='\033[0;35m'
       ;;
     "cyan")
-      code='\033[0;36m' 
+      code='\033[0;36m'
       ;;
     "clay")
       code='\033[38;5;217m'
@@ -135,11 +135,11 @@ fetchColor() {
       code='\033[0;96m'  # Intense Cyan
       ;;
     *)
-      code='\033[0m'    
+      code='\033[0m'
       ;;
   esac
 
-  echo "$code"  
+  echo "$code"
 }
 
 splitQuote() {
@@ -149,20 +149,20 @@ splitQuote() {
     lines=()
     local result=""
 
-    for word in ${words[@]}; do 
+    for word in ${words[@]}; do
         length_test=$(( ${#result} + ${#word} + 1 ))
 
-        if (( length_test > max_length )); then 
+        if (( length_test > max_length )); then
             lines+=("$result")
             echo -e "\t\t${result}"
             result="$word"
-        else 
+        else
             if [[ -n $result ]]; then
-                result+=$' '$word 
+                result+=$' '$word
             else
                 result=$word
             fi
-        fi 
+        fi
     done
 
     if [[ -n $result ]]; then
@@ -188,10 +188,10 @@ iterate() {
 
     if (( FRAME_UP == 1 )); then
         FRAME_INDEX=$((FRAME_INDEX+1))
-    else 
+    else
         FRAME_INDEX=$((FRAME_INDEX-1))
     fi
-    
+
     # calculate delta time
     CURRENT_TIME=$(date +%s)
     DELTA=$((CURRENT_TIME - LAST_TIME))
@@ -232,11 +232,11 @@ iterate() {
         elif ((line_index == 12 && ${#lines[@]} >= 6)); then
             echo -e "$COLOR$line$RESET_COLOR\t${lines[6]}"
             last_quote_line=12
-        elif ((line_index == last_quote_line + 1)); then 
+        elif ((line_index == last_quote_line + 1)); then
             if ((last_quote_line < 12));  then
                 echo -e "$COLOR$line$RESET_COLOR\t$COLOR${BY_NAME}$RESET_COLOR"
             fi
-        elif ((line_index == last_quote_line + 2)); then 
+        elif ((line_index == last_quote_line + 2)); then
             if ((last_quote_line == 12)); then
                 echo -e "$COLOR$line$RESET_COLOR\t$COLOR${BY_NAME}$RESET_COLOR"
             fi
@@ -244,12 +244,12 @@ iterate() {
             echo -e "$COLOR$line$RESET_COLOR"
         fi
         ((line_index++))
-    else 
+    else
         if ((line_index == 7)); then
             echo -e "$COLOR$line$RESET_COLOR\tSee you next time."
-        elif ((line_index == 8)); then 
+        elif ((line_index == 8)); then
             echo -e "$COLOR$line$RESET_COLOR\tDon't work too hard!"
-        else 
+        else
             echo -e "$COLOR$line$RESET_COLOR"
         fi
         ((line_index++))
@@ -258,7 +258,7 @@ done < "${DIRECTORY}/res/sprites/${SPRITE_DIRECTORY}/${frame}.txt"
 
     # FOOTER UI
     echo -e "\n"
-    
+
 
     sleep "$SLEEP_DUR"
     if [[ "$OVER" == false ]]; then
@@ -315,14 +315,14 @@ SLEEP_DUR=$(echo "scale=2; 1 / $FRAME_RATE" | bc)
 fetchCalls
 splitQuote
 
-if [ "$FLAG_F" = true ]; then 
+if [ "$FLAG_F" = true ]; then
     echo FLAGFFRUE
     echo "$FRAME_RATE"
 fi
 
 
 if [ "$FLAG_T" = true ]; then
-    if (( "$TOTAL < $((SESSION_TIME * 60))" | bc -l )); then echo "passed" 
+    if (( "$TOTAL < $((SESSION_TIME * 60))" | bc -l )); then echo "passed"
     fi
 
     echo $OVER
