@@ -34,7 +34,7 @@ SPRITE_DIRECTORY=${SPRITE_DIRECTORY:-"b_frames"}
 STORE_NEW_DEFAULTS=false
 
 DIRECTORY=$(mktemp -d)
-cp -r $(brew --prefix gnuddha)/pkshare/* "${DIRECTORY}"
+cp -r $(brew --prefix gnuddha)/share/gnuddha/* "${DIRECTORY}"
 
 #for local development
 # DIRECTORY="."
