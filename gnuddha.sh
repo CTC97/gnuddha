@@ -51,7 +51,7 @@ cleanup() {
     tput cnorm
 
 if [ "$STORE_NEW_DEFAULTS" = true ]; then
-  cat > "$(brew --prefix)/share/gnuddha/res/config.cfg" <<EOL
+  cat > "$(brew --prefix gnuddha)/share/gnuddha/config.cfg" <<EOL
 # DEFAULT CONFIGURATION
 SESSION_TIME="${SESSION_TIME}"
 SPRITE_DIRECTORY="${SPRITE_DIRECTORY}"
@@ -62,7 +62,7 @@ fi
 trap cleanup EXIT
 
 fetchDefaults() {
-    CONFIG_FILE="$(brew --prefix)/share/gnuddha/res/config.cfg"
+    CONFIG_FILE="$(brew --prefix gnuddha)/share/gnuddha/config.cfg"
     if [ -f "$CONFIG_FILE" ]; then
         source "$CONFIG_FILE"
     fi
