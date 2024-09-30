@@ -211,7 +211,13 @@ iterate() {
     while read -r line; do
     if [[ "$OVER" == false ]]; then
         if ((line_index == 4)); then
-            echo -e "$COLOR$line$RESET_COLOR\tTotal time: $COLOR${TOTAL} seconds$RESET_COLOR"
+            if (( TOTAL >= 60 )); then
+                MINUTES=$(( TOTAL / 60 ))
+                SECONDS=$(( TOTAL % 60 ))
+                echo -e "$COLOR$line$RESET_COLOR\tTotal time: $COLOR${MINUTES}m ${SECONDS}s$RESET_COLOR"
+            else
+                echo -e "$COLOR$line$RESET_COLOR\tTotal time: $COLOR${TOTAL} seconds$RESET_COLOR"
+            fi
         elif ((line_index == 6)); then
             echo -e "$COLOR$line$RESET_COLOR\t${lines[0]}"
             last_quote_line=6
