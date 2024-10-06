@@ -29,7 +29,7 @@ OVER=false
 CURRENT_TIME=$(date +%s)
 LAST_TIME=$(date +%s)
 
-SPRITE_DIRECTORY=${SPRITE_DIRECTORY:-"b_frames"}
+SPRITE_DIRECTORY=${SPRITE_DIRECTORY:-"1"}
 
 STORE_NEW_DEFAULTS=false
 
@@ -74,6 +74,11 @@ fetchCalls() {
     random_key=$(( RANDOM % total_keys ))
     QUOTE=$(echo "$json_data" | jq -r --arg key "$random_key" '.[$key].quote')
     BY_NAME=$(echo "$json_data" | jq -r --arg key "$random_key" '.[$key].source')
+
+    if [ -z "$QUOTE" ] || [ "$QUOTE" == "null" ]; then
+        QUOTE="Breathe."
+        BY_NAME=""
+    fi
 
     loc_info=$(curl -s https://ipinfo.io)
     city=$(echo "$loc_info" | jq -r '.city')
