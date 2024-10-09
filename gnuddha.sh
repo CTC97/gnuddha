@@ -30,6 +30,7 @@ CURRENT_TIME=$(date +%s)
 LAST_TIME=$(date +%s)
 
 SPRITE_DIRECTORY=${SPRITE_DIRECTORY:-"1"}
+BELL_DIRECTORY=${BELL_DIRECTORY:-"3"}
 
 STORE_NEW_DEFAULTS=false
 
@@ -55,6 +56,7 @@ if [ "$STORE_NEW_DEFAULTS" = true ]; then
 # DEFAULT CONFIGURATION
 SESSION_TIME="${SESSION_TIME}"
 SPRITE_DIRECTORY="${SPRITE_DIRECTORY}"
+BELL_DIRECTORY="${BELL_DIRECTORY}"
 COLOR="${COLOR}"
 EOL
 fi
@@ -178,7 +180,7 @@ splitQuote() {
 }
 
 playBell() {
-    mpg123 "${DIRECTORY}/res/sounds/bell_01.mp3" > /dev/null 2>&1 &
+    mpg123 "${DIRECTORY}/res/sounds/${BELL_DIRECTORY}.mp3" > /dev/null 2>&1 &
 }
 
 # Function to iterate and display content
@@ -287,25 +289,25 @@ tput civis
 
 fetchDefaults
 
-while getopts ":t:f:c:s:d" opt; do
+while getopts ":t:f:c:s:b:d" opt; do
     case ${opt} in
         t )
             FLAG_T=true
             SESSION_TIME=$OPTARG
-            echo "Option -t set with value: $SESSION_TIME"
             ;;
         f )
             FLAG_F=true
             FRAME_RATE=$OPTARG
-            echo "Option -f set with value: $FRAME_RATE"
             ;;
         c )
             FLAG_C=true
             COLOR=$(fetchColor $OPTARG)
-            echo "Option -c set with value: $COLOR"
             ;;
         s)
             SPRITE_DIRECTORY=$OPTARG
+            ;;
+        b)
+            BELL_DIRECTORY=$OPTARG
             ;;
         d)
             STORE_NEW_DEFAULTS=true
